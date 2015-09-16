@@ -74,8 +74,14 @@ def serve_forever(sock, maps):
 
 
 if __name__ == "__main__":
+    from argparse import ArgumentParser
+
+    parser = ArgumentParser()
+    parser.add_argument("port", help="port to use", type=int)
+
+    args = parser.parse_args()
+
     maps = [hash_address_map, mysql_map]
-    #maps = [hash_address_map]
-    sock = create_socket()
+    sock = create_socket(port=args.port)
     serve_forever(sock, maps)
 

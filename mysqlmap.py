@@ -20,18 +20,28 @@ import socket
 
 class _MyConnection(object):
     _conn = None
+    _conn_age = None
 
     @classmethod
     def get_connection(cls):
-        if cls._conn is None:
+        if cls._conn is None or cls._need_update():
+            if cls._conn is not None:
+                cls._conn.close()
             host = _config.get("mysql", "host")
             user = _config.get("mysql", "user")
             pw = _config.get("mysql", "password")
             db = _config.get("mysql", "database")
             conn = mdb.connect(host, user, pw, db)
             cls._conn = conn
+            cls._conn_age = datetime.datetime.now()
             atexit.register(conn.close)
         return cls._conn
+
+    @classmethod
+    def _need_update(cls):
+        t = datetime.datetime.now()
+        delta = (t - cls._conn_age).total_seconds()
+        return delta > 60
 
 
 class NotFoundError(Exception):
