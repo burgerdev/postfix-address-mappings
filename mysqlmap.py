@@ -9,12 +9,11 @@ import atexit
 _this_dir = os.path.dirname(__file__)
 _configfile = os.path.join(_this_dir, "mysql.ini")
 
-_config = ConfigParser.ConfigParser()
+_config = ConfigParser.RawConfigParser()
 _config.read(_configfile)
 _sql = _config.get("mysql", "query")
 
 import MySQLdb as mdb
-import sys
 import os
 import socket
 
@@ -24,7 +23,7 @@ class _MyConnection(object):
 
     @classmethod
     def get_connection(cls):
-        if cls.conn is None:
+        if cls._conn is None:
             host = _config.get("mysql", "host")
             user = _config.get("mysql", "user")
             pw = _config.get("mysql", "password")
@@ -35,8 +34,28 @@ class _MyConnection(object):
         return cls._conn
 
 
+class NotFoundError(Exception):
+    pass
+
 def mysql_map(addr):
-    with _MyConnection.get_connection().cursor() as cur:
-        cur.execute(_sql, addr)
-        res = cur.fetchone()
-        return res
+    cur = _MyConnection.get_connection().cursor()
+    cur.execute(_sql, {"address": addr})
+    res = cur.fetchone()
+    if res is None:
+        raise NotFoundError("no matching entry")
+    return res[0]
+
+
+if __name__ == "__main__":
+    import sys
+    for s in sys.argv[1:]:
+        print("=====")
+        print(s)
+        try:
+            res = mysql_map(s)
+        except NotFoundError as err:
+            print(str(err))
+        else:
+            print(type(res))
+            print(res)
+

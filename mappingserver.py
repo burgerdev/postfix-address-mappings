@@ -12,6 +12,7 @@ from threading import Thread
 
 
 from hashaddressmap import hash_address_map
+from mysqlmap import mysql_map
 
 logger = logging.getLogger("mappingserver")
 logging.basicConfig(level=logging.INFO)
@@ -73,8 +74,8 @@ def serve_forever(sock, maps):
 
 
 if __name__ == "__main__":
-    #maps = [hash_address_map, mysql_map]
-    maps = [hash_address_map]
+    maps = [hash_address_map, mysql_map]
+    #maps = [hash_address_map]
     sock = create_socket()
     serve_forever(sock, maps)
 
