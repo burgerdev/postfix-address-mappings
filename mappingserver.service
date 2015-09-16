@@ -1,0 +1,10 @@
+[Unit]
+Description=Virtual Alias Mapping for Postfix
+
+[Service]
+User=postfix
+ExecStart=/usr/bin/python /usr/local/lib/postfix/postfix-address-mappings/mappingserver.py 30303
+
+[Install]
+WantedBy=multi-user.target
+Alias=mappingserver.service
