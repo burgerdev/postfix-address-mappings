@@ -1,0 +1,7 @@
+[mysql]
+
+host = localhost
+user = <username>
+password = <password>
+database = <database_name>
+query = "SELECT destination FROM virtual_aliases WHERE source = %s"
